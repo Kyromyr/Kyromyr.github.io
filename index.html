@@ -1,15 +1,40 @@
-<html>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+
+	<title>Legends of Idleon | Testing</title>
+	<meta name="image" content="https://www.LegendsOfIdleon.com/share.png" />
+	<meta property="og:type" content="website" />
+	<meta property="og:title" content="Legends of Idleon | Testing" />
+
+	<script type="text/javascript" src="game.js"></script>
+
+	<style>
+	html,body { 
+		margin: 0; padding: 0; height: 100%; overflow: hidden; 
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		background-image: url("assets/data/10bg.png");
+		background-size: cover;
+		background-color: #aaa;
+		background-blend-mode: multiply;
+	}
+	</style>
+	
+</head>
 <body>
+	
 	<noscript>This webpage makes extensive use of JavaScript. Please enable JavaScript in your web browser to view this page.</noscript>
 	<head>TEST</head>
 	<p id="testNode">Hello, World!</p>
 
 	<script>
-		var foo = 0;
-		setInterval(function() {
-			++foo;
-			document.getElementById("testNode").innerText = foo.toString();
-		} , 1000);
+		function test(text) {
+			document.getElementById("testNode").innerText = text.toString();
+		}
 	</script>
 	
 </body>
