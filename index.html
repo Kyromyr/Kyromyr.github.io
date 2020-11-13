@@ -1,7 +1,16 @@
-<!DOCTYPE html>
 <html>
 <body>
-<h1>Hello World</h1>
-<p>I'm hosted with GitHub Pages.</p>
+	<noscript>This webpage makes extensive use of JavaScript. Please enable JavaScript in your web browser to view this page.</noscript>
+	<head>TEST</head>
+	<p id="testNode">Hello, World!</p>
+
+	<script>
+		var foo = 0;
+		setInterval(function() {
+			++foo;
+			document.getElementById("testNode").innerText = foo.toString();
+		} , 1000);
+	</script>
+	
 </body>
 </html>
