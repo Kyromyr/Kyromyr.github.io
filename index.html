@@ -6,21 +6,237 @@
 	<title>Legends of Idleon | Testing</title>
 	<meta property="og:type" content="website" />
 	<meta property="og:title" content="Legends of Idleon | Testing" />
-
-	<script type="text/javascript" src="funcs.js"></script>
+	
+	<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+	<link rel="stylesheet" href="./style.css">
 	
 </head>
 <body>
+	<template id="talent-template">
+		<div style="width: 56px; height: 56px; position: relative">
+			<img class="talent" onclick="this.parentNode.parentNode.onclick();" onerror="this.src = 'assets/Data/UISkillIconLocke.png';"/>
+			<input type="number" min="0" max="100" value="0" class="talent" style="position: relative; left: 6px; bottom: 14px"/>
+		</div>
+	</template>
 	
-	<noscript>This webpage makes extensive use of JavaScript. Please enable JavaScript in your web browser to view this page.</noscript>
-	<head>TEST</head>
-	<p id="testNode">Hello, World!</p>
-
 	<script>
-		function test(text) {
-			document.getElementById("testNode").innerText = text.toString();
+		class Talent extends HTMLElement {
+			static counter = 0;
+
+			connectedCallback() {
+				const template = document.getElementById('talent-template');
+				const node = document.importNode(template.content, true);
+				this.appendChild(node);
+				
+				this.id = "x-talent-" + Talent.counter++;
+				setTimeout(() => { this.talent(this.lastChild.data); this.lastChild.data = ""; }, 0);
+			}
+
+			onclick() {
+				document.getElementById("talent-display-text").textContent = this.talent();
+			}
+
+			talent(x) {
+				if (typeof x == "undefined") {
+					return this.currentTalent;
+				}
+
+				var id = Number.parseInt(x);
+				if (typeof id != "number") {
+					console.error("Invalid talent input: " + x);
+					return;
+				}
+
+				id < 0 && (id = 999);
+				var img = "assets/Data/UISkillIcon" + id + ".png";
+				this.children[0].children[0].src = img;
+				this.level(0);
+				this.currentTalent = id;
+			}
+
+			level(x) {
+				var input = this.children[0].children[1];
+
+				if (typeof x == "undefined") {
+					return Number.parseInt(input.value);
+				}
+
+				input.value = x;
+			}
 		}
+
+		customElements.define("x-talent", Talent);
 	</script>
+
+    <div class="talent-display">
+        <label id="talent-display-text" style="position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%)">a</label>
+    </div>
+	<div id="talent-window" class="talent-window">
+		<div class="talent-class" style="background-image: url(assets/data/ClassIcons1.png);"></div>
+		<x-talent>0</x-talent>
+		<x-talent>1</x-talent>
+		<x-talent>8</x-talent>
+		<x-talent>9</x-talent>
+		<x-talent>5</x-talent>
+
+		<div class="talent-class"></div>
+		<x-talent>10</x-talent>
+		<x-talent>11</x-talent>
+		<x-talent>12</x-talent>
+		<x-talent>13</x-talent>
+		<x-talent>6</x-talent>
+
+		<div class="talent-class" style="background-image: url(assets/data/ClassIcons6.png);"></div>	
+		<x-talent>85</x-talent>
+		<x-talent>86</x-talent>
+		<x-talent>87</x-talent>
+		<x-talent>88</x-talent>
+		<x-talent>89</x-talent>
+
+		<div class="talent-class" style="background-image: url(assets/data/ClassIcons7.png);"></div>	
+		<x-talent>90</x-talent>
+		<x-talent>91</x-talent>
+		<x-talent>92</x-talent>
+		<x-talent>93</x-talent>
+		<x-talent>94</x-talent>
+
+		<div class="talent-class"></div>	
+		<x-talent>95</x-talent>
+		<x-talent>96</x-talent>
+		<x-talent>97</x-talent>
+		<x-talent>98</x-talent>
+		<x-talent>99</x-talent>
+
+		<div class="talent-class"></div>	
+		<x-talent>100</x-talent>
+		<x-talent>101</x-talent>
+		<x-talent>102</x-talent>
+		<x-talent>103</x-talent>
+		<x-talent>104</x-talent>
+
+		<div class="talent-class" style="background-image: url(assets/data/ClassIcons8.png);"></div>	
+		<x-talent>105</x-talent>
+		<x-talent>106</x-talent>
+		<x-talent>107</x-talent>
+		<x-talent>108</x-talent>
+		<x-talent>109</x-talent>
+
+		<div class="talent-class"></div>	
+		<x-talent>110</x-talent>
+		<x-talent>111</x-talent>
+		<x-talent>112</x-talent>
+		<x-talent>113</x-talent>
+		<x-talent>114</x-talent>
+
+		<div class="talent-class"></div>	
+		<x-talent>115</x-talent>
+		<x-talent>116</x-talent>
+		<x-talent>117</x-talent>
+		<x-talent>118</x-talent>
+		<x-talent>119</x-talent>
+
+		<div class="talent-class" style="background-image: url(assets/data/ClassIcons18.png);"></div>	
+		<x-talent>263</x-talent>
+		<x-talent>266</x-talent>
+		<x-talent>267</x-talent>
+		<x-talent>268</x-talent>
+		<x-talent>269</x-talent>
+
+		<div class="talent-class" style="background-image: url(assets/data/ClassIcons19.png);"></div>	
+		<x-talent>270</x-talent>
+		<x-talent>271</x-talent>
+		<x-talent>272</x-talent>
+		<x-talent>273</x-talent>
+		<x-talent>274</x-talent>
+
+		<div class="talent-class"></div>	
+		<x-talent>284</x-talent>
+		<x-talent>276</x-talent>
+		<x-talent>277</x-talent>
+		<x-talent>278</x-talent>
+		<x-talent>279</x-talent>
+
+		<div class="talent-class"></div>	
+		<x-talent>280</x-talent>
+		<x-talent>281</x-talent>
+		<x-talent>282</x-talent>
+		<x-talent>283</x-talent>
+		<x-talent>265</x-talent>
+
+		<div class="talent-class" style="background-image: url(assets/data/ClassIcons20.png);"></div>	
+		<x-talent>285</x-talent>
+		<x-talent>286</x-talent>
+		<x-talent>287</x-talent>
+		<x-talent>288</x-talent>
+		<x-talent>289</x-talent>
+
+		<div class="talent-class"></div>	
+		<x-talent>290</x-talent>
+		<x-talent>291</x-talent>
+		<x-talent>292</x-talent>
+		<x-talent>293</x-talent>
+		<x-talent>294</x-talent>
+
+		<div class="talent-class"></div>	
+		<x-talent>295</x-talent>
+		<x-talent>296</x-talent>
+		<x-talent>297</x-talent>
+		<x-talent>298</x-talent>
+		<x-talent>299</x-talent>
+
+		<div class="talent-class" style="background-image: url(assets/data/ClassIcons30.png);"></div>	
+		<x-talent>445</x-talent>
+		<x-talent>446</x-talent>
+		<x-talent>447</x-talent>
+		<x-talent>448</x-talent>
+		<x-talent>449</x-talent>
+
+		<div class="talent-class" style="background-image: url(assets/data/ClassIcons31.png);"></div>	
+		<x-talent>450</x-talent>
+		<x-talent>451</x-talent>
+		<x-talent>452</x-talent>
+		<x-talent>453</x-talent>
+		<x-talent>454</x-talent>
+
+		<div class="talent-class"></div>	
+		<x-talent>455</x-talent>
+		<x-talent>456</x-talent>
+		<x-talent>457</x-talent>
+		<x-talent>458</x-talent>
+		<x-talent>459</x-talent>
+
+		<div class="talent-class"></div>	
+		<x-talent>460</x-talent>
+		<x-talent>461</x-talent>
+		<x-talent>462</x-talent>
+		<x-talent>464</x-talent>
+		<x-talent>463</x-talent>
+
+		<div class="talent-class" style="background-image: url(assets/data/ClassIcons33.png);"></div>	
+		<x-talent>999</x-talent>
+		<x-talent>999</x-talent>
+		<x-talent>999</x-talent>
+		<x-talent>999</x-talent>
+		<x-talent>999</x-talent>
+
+		<div class="talent-class"></div>	
+		<x-talent>999</x-talent>
+		<x-talent>999</x-talent>
+		<x-talent>999</x-talent>
+		<x-talent>999</x-talent>
+		<x-talent>999</x-talent>
+
+		<div class="talent-class"></div>	
+		<x-talent>999</x-talent>
+		<x-talent>999</x-talent>
+		<x-talent>999</x-talent>
+		<x-talent>999</x-talent>
+		<x-talent>999</x-talent>
+	</div>
+
+
+
+	<noscript>This webpage makes extensive use of JavaScript. Please enable JavaScript in your web browser to view this page.</noscript>
 	
 </body>
 </html>

@@ -1,0 +1,69 @@
+body {
+	background-color: black;
+	background-image: url("assets/data/aBGUI2.png");
+	background-repeat: no-repeat;
+	background-size: cover;
+}
+
+.talent-window {
+	border-style: double;
+	background-color: lightslategrey;
+	position: absolute;
+
+	right: 8px;
+	top: 20px;
+	width: 404px;
+	height: 800px;
+	padding-bottom: 8px;
+
+	display: flex;
+	flex-wrap: wrap;
+	overflow-y: scroll;
+}
+
+.talent-display {
+	border-style: double;
+	background-color: lightslategray;
+	position: relative;
+	left: 1134px;
+	top: 12px;
+	width: 100px;
+	height: 60px;
+	font-weight: bold;
+	font-size: 24px;
+}
+
+.talent-class {
+	background: no-repeat center center;
+	width: 56px;
+	height: 56px;
+	background-repeat: no-repeat;
+}
+
+#talent-window > * {
+	margin: 4px;
+	margin-top: 8px;
+	margin-bottom: 8px;
+}
+
+input.talent {
+	background-image: url("assets/data/UISkillLv.png");
+    background-color: transparent;
+    border: none;
+    outline: none;
+    width: 40px;
+    height: 14px;
+    text-align: center;
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
