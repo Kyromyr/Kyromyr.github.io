@@ -14,7 +14,7 @@
 <body>
 	<template id="talent-template">
 		<div style="width: 56px; height: 56px; position: relative">
-			<img class="talent" onclick="this.parentNode.parentNode.onclick();" onerror="this.src = 'assets/Data/UISkillIconLocke.png';"/>
+			<img class="talent" onclick="this.parentNode.parentNode.onclick();" onerror=""/>
 			<input type="number" min="0" max="100" value="0" class="talent" style="position: relative; left: 6px; bottom: 14px"/>
 		</div>
 	</template>
@@ -48,7 +48,7 @@
 				}
 
 				id < 0 && (id = 999);
-				var img = "assets/Data/UISkillIcon" + id + ".png";
+			//	var img = "assets/Data/UISkillIcon" + id + ".png";
 				this.children[0].children[0].src = img;
 				this.level(0);
 				this.currentTalent = id;
