@@ -7,7 +7,7 @@
 	<meta property="og:type" content="website" />
 	<meta property="og:title" content="Legends of Idleon | Testing" />
 	
-	<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+	<!-- <script type="text/javascript" src="https://code.jquery.com/jquery-1.7.1.min.js"></script> -->
 	<link rel="stylesheet" href="./style.css">
 	
 </head>
@@ -48,8 +48,8 @@
 				}
 
 				id < 0 && (id = 999);
-			//	var img = "assets/Data/UISkillIcon" + id + ".png";
-				this.children[0].children[0].src = img;
+				var img = "assets/Data/UISkillIcon" + id + ".png";
+				// this.children[0].children[0].src = img;
 				this.level(0);
 				this.currentTalent = id;
 			}
