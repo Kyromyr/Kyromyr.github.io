@@ -127,6 +127,97 @@
 			noSave = false;
 		}
 
+		var draggedOver = [];
+		var elementHeight;
+		var id;
+
+		function startDragScript(event)
+		{
+			elementHeight = event.target.clientHeight;
+			id = event.target.id; // Using this id only for UI animations, because it's probably not as safe as using dataTransfer for dropping
+			event.target.firstChild.classList.add("dragged");
+			event.dataTransfer.setData("id", event.target.id);
+		}
+
+		function endDragScript(event)
+		{
+			event.target.firstChild.classList.remove("dragged");
+			draggedOver.forEach((element) => {element.style.paddingTop = null; element.style.paddingBottom = null});
+			draggedOver = [];
+		}
+
+		function dragScriptLeave(event)
+		{
+			if (event.target.nodeType == 1
+				&& event.target.classList.contains("nav-link")
+				&& draggedOver.includes(event.target))
+			{
+				event.target.style.paddingBottom = null;
+				event.target.style.paddingTop = null;
+				draggedOver.splice(draggedOver.indexOf(event.target), 1);
+			}
+		}
+
+		function dragScriptOver(event)
+		{
+			if (event.target.nodeType == 1
+				&& event.target.classList.contains("nav-link")
+				&& !event.target.classList.contains("dragged"))
+			{
+				if (!draggedOver.includes(event.target))
+				{
+					let targetId = event.target.parentNode.id;
+					if (id < targetId)
+						event.target.style.paddingBottom = elementHeight + "px";
+					else
+						event.target.style.paddingTop = elementHeight + "px";
+					draggedOver.push(event.target);
+				}
+				event.preventDefault();
+			}
+		}
+
+		function dropScript(event)
+		{
+			const tabs = document.getElementById("scripts-tab");
+
+			if (event.target.nodeType != 1 || event.target.classList.contains("dragged") || !tabs.contains(event.target.parentNode)) // Shouldn't happen
+			{
+				console.error("A bug happend in the drag-and-drop script");
+				return ;
+			}
+			event.preventDefault();
+
+			let data = event.dataTransfer.getData("id");
+			let element = document.getElementById(data);
+
+			let id1 = parseInt(data);
+			let id2 = parseInt(event.target.parentNode.id);
+
+			let sibling = event.target.parentNode;
+			while (sibling && sibling != element)
+			{
+				if (id1 > id2)
+					sibling.id++;
+				else
+					sibling.id--;
+				sibling = id1 > id2 ? sibling.nextElementSibling : sibling.previousElementSibling;
+			}
+
+			element.id = id2;
+
+			tabs.removeChild(element);
+			if (id2 < id1)
+				tabs.insertBefore(element, event.target.parentNode);
+			else
+				tabs.insertBefore(element, event.target.parentNode.nextElementSibling);
+
+			let swap = scripts[id1];
+			scripts.splice(id1, 1);
+			scripts.splice(id2, 0, swap);
+			scriptSave();
+		}
+
 		function scriptNew(name) {
 			if (typeof(name) !== "string") name = "New " + ++scriptCounter;
 
@@ -136,6 +227,14 @@
 
 			clon.children[0].id = scripts.length;
 			clon.children[0].children[0].textContent = name;
+			clon.children[0].draggable = true;
+
+			clon.children[0].addEventListener("dragstart", startDragScript);
+			clon.children[0].addEventListener("dragend", endDragScript);
+			clon.children[0].addEventListener("dragover", dragScriptOver);
+			clon.children[0].addEventListener("dragleave", dragScriptLeave);
+			clon.children[0].addEventListener("drop", dropScript);
+
 			scripts.push([name, scriptTemplate, emptyHistory]);
 			tabs.appendChild(clon);
 		}
