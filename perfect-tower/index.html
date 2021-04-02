@@ -12,7 +12,11 @@
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
 
 	<link rel="stylesheet" href="lib/codemirror.css">
+    <link rel="stylesheet" href="lib/darcula.css">
 	<script src="lib/codemirror.js"></script>
+
+    <script src="addon/edit/matchbrackets.js"></script>
+    <script src="addon/selection/active-line.js"></script>
 
 	<link rel="stylesheet" href="./style.css">
 
@@ -30,7 +34,7 @@
 		<div class="nowrap">
 			<button class="basicBtn" onclick="scriptNew()">New</button>
 			<button class="basicBtn basicBtnRed" onclick="scriptDelete()">Delete</button>
-			<span class="infotext">Editor: 1.24 ─ Game: v0.8.4 B4</span>
+			<span class="infotext">Editor: 1.25 ─ Game: v0.8.4 B4</span>
 			<span id="warning" class="infotext warning">Cannot access Local Storage. Scripts will not save!</span>
 		</div>
 
@@ -41,11 +45,11 @@
 		</div>
 		
 		<div class="div-container">
-			<div class="div-container-item div-container-border">
+			<div class="div-container-item div-container-border div-container-code">
 				<ul id="scripts-tab" class="nav nav-tabs"></ul>
 				<textarea id="scripts" placeholder="Scripts go here"></textarea>
 			</div>
-			<textarea id="output" readonly class="div-container-item textarea"></textarea>
+			<textarea id="output" readonly class="div-container-item textarea div-container-textarea"></textarea>
 			<input id="lua_arg" type="hidden">
 		</div>
 	</div>
@@ -76,6 +80,8 @@
 			return fengari.load("return lua_main'" + func + "';")();
 		}
 
+        const theme = (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) ? "darcula" : "default";
+
 		var editor = CodeMirror.fromTextArea(document.getElementById("scripts"), {
 			autocapitalize: false,
 			autocorrect: false,
@@ -85,6 +91,9 @@
 			lineSeparator: "\n",
 			spellcheck: false,
 			readOnly: "nocursor",
+            theme: theme,
+            styleActiveLine: true,
+            matchBrackets: true,
   		});
 
 		editor.on("change", function() {
@@ -119,6 +128,14 @@
 		function scriptSelect(node) {
 			scriptSave();
 			output.value = "";
+
+			if (activeTab && node == activeTab) {
+				var tab = activeTab;
+				setTimeout(function() {
+					tab.children[0].classList.remove("active");
+				}, 0);
+				node = false;
+			}
 			activeTab = node;
 
 			noSave = true;
