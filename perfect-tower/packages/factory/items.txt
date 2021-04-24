@@ -12,7 +12,7 @@ Tier  Item
   10  plate
   10  plate.circuit
   10  plate.dense
-  10  plate.rubber
+   1  plate.rubber
   10  plate.stack
   10  pump
   10  ring
@@ -42,5 +42,5 @@ Tier  Item
    5  producer.town
    5  producer.tradingpost
    5  producer.workshop
-   5  producer.gems
-   5  producer.exoticgems
+   1  producer.gems
+   1  producer.exoticgems
