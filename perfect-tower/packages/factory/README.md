@@ -25,10 +25,10 @@ Change the first four actions of `factory-input` to what you want to craft.
 
 Once you've set the target you want, launch the AI, go to the factory, then press the "p" key (impulse can be changed in `factory-input`).
 
-Make sure there are no machines currently processing when you launch the craft. If there are, cancel by holding shift and right-clicking on the machine(s).
+Make sure there are no machines currently processing when you launch the craft. If there are, cancel by holding shift and right clicking on the machine(s).
 
 ## Import codes
-Requires 17 lines.
+Requires 17 lines. Triple click to select.
 
 Name|Import Code
 :-:|:--
