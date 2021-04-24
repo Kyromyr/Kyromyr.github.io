@@ -7,6 +7,8 @@ Use items present in the inventory first.
 
 Tell you how much ore/rubber is missing.
 
+Keep one dust of each type.
+
 ## This package *will not*:
 Craft lumps or hammers, though it can still craft T1 pressers.
 
