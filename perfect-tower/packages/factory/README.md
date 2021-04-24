@@ -29,6 +29,8 @@ Once you've set the target you want, launch the AI, go to the factory, then pres
 
 Make sure there are no machines currently processing when you launch the craft. If there are, cancel by holding shift and right clicking on the machine(s).
 
+Leaving the factory will cancel an ongoing craft. To resume, simply enter the factory and press the "p" key again.
+
 ## Import codes
 Requires 17 lines. Triple click to select.
 
