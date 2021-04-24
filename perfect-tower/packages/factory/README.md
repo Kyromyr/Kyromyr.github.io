@@ -15,7 +15,7 @@ Uptier dust.
 ## Usage
 Change the first four actions of `factory-input` to what you want to craft.
 
-`cf.item`    The item to craft. A list can be found [here](/packages/factory/items.txt), or listed as constants for the `count` function in the [editor](https://kyromyr.github.io/perfect-tower/)
+`cf.item`    The item to craft. A list can be found [here](items.txt), or listed as constants for the `count` function in the [editor](https://kyromyr.github.io/perfect-tower/)
 
 `cf.tier`    The tier of item.
 
