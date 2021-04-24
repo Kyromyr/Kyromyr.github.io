@@ -1,0 +1,29 @@
+:global string cf.Data
+:global int cf.DataItems
+:global int cf.Parser
+:global int cf.ParserItems
+:global int cf.ParserDone
+:local int item
+:local int itemMax
+:local int offset
+:local int i
+
+item = cf.Parser * cf.ParserItems
+itemMax = item + cf.ParserItems
+loop:
+	offset = 2 + 68 * item
+	item += 1
+	gotoif(done, item > itemMax | item > cf.DataItems)
+	gss("cf." . item . ".n", sub(cf.Data, offset + 1, gig("cf.Digit" . sub(cf.Data, offset + 0, 1))))
+	gis("cf." . item . ".t", gig("cf.Digit" . sub(cf.Data, offset + 26, 1)))
+	gis("cf." . item . ".m", gig("cf.Digit" . sub(cf.Data, offset + 27, 1)))
+	gis("cf." . item . ".r", gig("cf.Digit" . sub(cf.Data, offset + 28, 1)))
+	gis("cfi." . gsg("cf." . item . ".n") . gig("cf." . item . ".t"), item)
+	i = 0
+	recipe:
+		gotoif(loop, i == 13 | sub(cf.Data, offset + 29 + 3*i + 0, 2) == "00")
+		gis("cf." . item . "." . i . ".i", 36 * gig("cf.Digit" . sub(cf.Data, offset + 29 + 3*i + 0, 1)) + gig("cf.Digit" . sub(cf.Data, offset + 29 + 3*i + 1, 1)))
+		gis("cf." . item . "." . i . ".a", gig("cf.Digit" . sub(cf.Data, offset + 29 + 3*i + 2, 1)))
+		i += 1
+		goto(recipe)
+done: cf.ParserDone += 1

@@ -1,0 +1,30 @@
+:global string cf.Item
+:global int cf.Tier
+:global string cfcm
+:local int i
+:local double temp
+
+loop:
+	i = (i + 1) % len(cfcm)
+	goto(if(gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1))) == 0 | active(gsg("cfm." . gig("cf.Digit" . sub(cfcm, i, 1)))), loop, if(gig("cf.Digit" . sub(cfcm, i, 1)) > 0, produce, if(gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)) . "." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)))) == gig("cfi.machine.presser1"), presser, craft))))
+
+	produce:
+		temp = min(gdg("cfc." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)) . "." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1))))), count(gsg("cf." . gig("cf." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)) . "." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)))) . ".0.i") . ".n"), gig("cf." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)) . "." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)))) . ".t")))
+		produce(gsg("cf." . gig("cf." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)) . "." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)))) . ".0.i") . ".n"), gig("cf." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)) . "." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)))) . ".t"), temp, gsg("cfm." . gig("cf.Digit" . sub(cfcm, i, 1))))
+		gds("cfc." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)) . "." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)))), gdg("cfc." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)) . "." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1))))) - temp)
+		goto(if(gdg("cfc." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)) . "." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1))))) == 0., next, loop))
+	craft:
+		temp = count(gsg("cf." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)) . "." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)))) . ".n"), gig("cf." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)) . "." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)))) . ".t"))
+		craft(gsg("cf." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)) . "." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)))) . ".n"), gig("cf." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)) . "." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)))) . ".t"), gdg("cfc." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)) . "." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1))))))
+		gds("cfc." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)) . "." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)))), gdg("cfc." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)) . "." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1))))) + temp - count(gsg("cf." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)) . "." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)))) . ".n"), gig("cf." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)) . "." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)))) . ".t")))
+		goto(if(gdg("cfc." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)) . "." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1))))) == 0., next, loop))
+	presser:
+		temp = gdg("cfc." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)) . "." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1))))) + count(gsg("cf." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)) . "." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)))) . ".n"), gig("cf." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)) . "." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)))) . ".t"))
+		presserLoop:
+			craft("hammer", 1, 1. - count("hammer", 1))
+			craft("machine.presser", 1, 1.)
+			goto(if(count(gsg("cf." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)) . "." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)))) . ".n"), gig("cf." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)) . "." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)))) . ".t")) == temp, next, presserLoop))
+	next:
+		gis("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)), gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1))) - 1)
+		cfcm = if(gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1))) > 0, cfcm, sub(cfcm, 0, i) . sub(cfcm, i+1, 99))
+		goto(if(0 == gig("cfcm.0") + gig("cfcm.1") + gig("cfcm.2") + gig("cfcm.3") + gig("cfcm.4") + gig("cfcm.5") + gig("cfcm.6") + gig("cfcm.7") + gig("cfcm.8") + gig("cfcm.9"), 99, loop))
