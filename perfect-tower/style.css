@@ -78,6 +78,7 @@
 .CodeMirror{
 	height: 100%;
 	border: none;
+	word-break: break-word;
 }
 
 .nav-tabs{
