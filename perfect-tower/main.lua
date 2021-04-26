@@ -162,10 +162,9 @@ function compile(name, input, testing)
 					table.insert(labelCache, name);
 					return "";
 				end)
-				:gsub("^%s+", ""):gsub("%s+$", "")
-			;
+				:gsub("^%s+", ""):gsub("%s+$", "");
 
-			if #line > 0 then
+			if #line:gsub("^%s*;.*$", "") > 0 then
 				-- associate the label cache with the line they point to
 				table.insert(lines, {text = line, num = line_number, label = labelCache});
 				labelCache = {};
