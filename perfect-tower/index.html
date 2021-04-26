@@ -114,24 +114,25 @@
 
 		function snippet() {
 			CodeMirror.showHint(editor, function () {
-				const cursor = editor.getCursor()
-				const token = editor.getTokenAt(cursor)
-				const start = token.start
-				const end = cursor.ch
-				const line = cursor.line
-				const currentWord = token.string
+				const cursor = editor.getCursor();
+				const lineText = editor.getTokenAt(cursor).string;
+				const start = lineText.lastIndexOf(" ") + 1;
+				const end = cursor.ch;
+				const line = cursor.line;
+				console.log(typeof(lineText))
+				const currentWord = lineText.substring(start);
 
 
 				const list = snippets.filter(function (item) {
-					return item.text.indexOf(currentWord) >= 0
+					return item.text.indexOf(currentWord) >= 0;
 				})
 
 				return {
-					list: list.length ? list : snippets,
+					list: list,
 					from: CodeMirror.Pos(line, start),
 					to: CodeMirror.Pos(line, end)
 				}
-			}, { completeSingle: false })
+			}, { completeSingle: false, alignWithWord: false })
 		}
 		editor.on("change", function() {
 			if (!activeTab || noSave) return;
