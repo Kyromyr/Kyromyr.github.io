@@ -92,38 +92,83 @@ function compile(name, input, testing)
 	line_number = 0;
 
 	local lines = {};
-	local lastLabel;
+	local labelCache = {};
+	local commentMode = false;
 
 	for line in input:gmatch"[^\n]*" do
 		line = line:gsub("^%s+", ""):gsub("%s+$", "");
+
+		-- comments can now go  at the end of a line
+		line = string.gsub(line, TOKEN.comment.patternAnywhere, "");
 		line_number = line_number + 1;
 
-		if line:match"^:" then
+		-- multiline comment support
+		if string.match(line, TOKEN.multilineCommentEnd.patternAnywhere) then
+			line = string.gsub(line, TOKEN.multilineCommentEnd.patternAnywhere, "");
+			commentMode = false;
+		elseif commentMode then
+			line = "";
+		elseif  string.match(line, TOKEN.multilineCommentStart.patternAnywhere) then
+			line = string.gsub(line, TOKEN.multilineCommentStart.patternAnywhere, "");
+			commentMode = true;
+		end
+		-- for people who like putting their multiline starts/ends on lines with actual code
+		line = line:gsub("^%s+", ""):gsub("%s+$", "");
+
+
+		if line:match"^:constant" then
+			local _, type, name, value = line:sub(2):gsub(" *;.*", ""):match("^(%a+) (%a+) " .. TOKEN.identifier.patternAnywhere .. " (.+)$");
+			assert(type == "int" or type == "double" or type == "string" or type == "bool", "constant types are 'int', 'double', 'string' and 'bool");
+			if (type == "int" or type == "double") then
+				assert((value:match"^%d+$" and type == "int") or (value:match"^%d+%.%d*$" and type == "double"), "bad argument, " .. type .. " expected, got " .. value);
+				value = tonumber(value);
+			elseif (type == "bool") then
+				value = value:lower();
+				assert(value:match"^true$" or value:match"^false$", "bool values are 'true' or 'false'");
+				if value:match"^true$" then
+					value = true;
+				else
+					value = false;
+				end
+			elseif (type == "string") then
+				value = value:gsub("^%s+", ""):gsub("%s+$", "");
+				if (value:match("^%\"(.*)%\"$")) then
+					parseValue = value:match("^%\"(.*)%\"$");
+				else
+					parseValue = value:match("^%\'(.*)%\'$");
+				end
+				assert(parseValue, "bad argument, string are enclosed in either single quotes or double quotes");
+				value = parseValue;
+			end
+			name = name:lower()
+			assert(not variables[name], "variable/label/constant already exists: " .. name);
+			variables[name] = {name = name, scope = "constant", type = type, value = value};
+		elseif line:match"^:" then
 			local scope, type, name = line:sub(2):gsub(" *;.*", ""):match("^(%a+) (%a+) " .. TOKEN.identifier.patternAnywhere .."$");
 			assert(scope, "variable definition: [global/local] [int/double] name");
 
 			name = name:lower();
 			assert(scope == "global" or scope == "local", "variable scopes are 'global' and 'local'");
 			assert(type == "int" or type == "double" or type == "string", "variable types are 'int', 'double' and 'string'");
-			assert(not variables[name], "variable/label already exists: " .. name);
-			
+			assert(not variables[name], "variable/label/constant already exists: " .. name);			
 			variables[name] = {name = name, scope = scope, type = type};
 		else
 			line = line
 				:gsub(TOKEN.identifier.pattern .. ":", function(name)
-					assert(not lastLabel, "labels can't have labels")
 					name = name:lower();
-					assert(not variables[name], "variable/label already exists: " .. name);
+					assert(not variables[name] or labelCache[name], "variable/label already exists: " .. name);
 					variables[name] = {name = name, scope = "local", type = "int", label = 0};
-					lastLabel = name;
+					-- add label to cache so that labels can have labels
+					table.insert(labelCache, name);
 					return "";
 				end)
 				:gsub("^%s+", ""):gsub("%s+$", "")
 			;
 
 			if #line > 0 then
-				table.insert(lines, {text = line, num = line_number, label = lastLabel});
-				lastLabel = nil;
+				-- associate the label cache with the line they point to
+				table.insert(lines, {text = line, num = line_number, label = labelCache});
+				labelCache = {};
 			end
 		end
 	end
@@ -136,11 +181,14 @@ function compile(name, input, testing)
 			if node.func.ret == "void" then
 				table.insert(actions, node);
 				
-				if line.label then
-					variables[line.label].label = #actions;
+				if #(line.label) > 0 then
+					-- iterate over the list of associated labels and set them 
+					for _, label in ipairs (line.label) do
+						variables[label].label = #actions;
+					end
 				end
 			else
-				assert(not line.label, "labels cannot be placed before impulses/conditions");
+				assert(#(line.label) == 0, "labels cannot be placed before impulses/conditions");
 				
 				if node.func.ret == "impulse" then
 					table.insert(impulses, node);
@@ -149,6 +197,11 @@ function compile(name, input, testing)
 				end
 			end
 		end
+	end
+
+	-- anything left in the label cache points to the end of the script
+	for _, label in ipairs (labelCache) do
+		variables[label].label = 99;
 	end
 
 	local function ins(frmt, val)
@@ -162,7 +215,17 @@ function compile(name, input, testing)
 				assert(variables[var], "why are you calling the label function manually?")
 				encode{type = "number", value = variables[var].label};
 				return;
+			elseif node.func.name:match"^constant%." then
+				local var = node.args[1].value;
+				assert(variables[var], "why are you calling the constant function manually?")
+				local type = variables[var].type;
+				if (type == "int" or type == "double") then
+					type = "number";
+				end
+				encode{type = type, value = variables[var].value};
+				return
 			end
+
 
 			ins("s1", node.func.name);
 
