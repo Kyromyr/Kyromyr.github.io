@@ -134,12 +134,14 @@
 }
 
 .CodeMirror-hints.darcula {
-    /* font-family: Menlo, Monaco, Consolas, "Courier New", monospace; */
+	/* font-family: Menlo, Monaco, Consolas, "Courier New", monospace; */
     color: #9c9e9e;
     background-color: #3b3e3f !important;
+	z-index: 10;
+	position: absolute;
 }
 
 .CodeMirror-hints.darcula .CodeMirror-hint-active {
     background-color: #494d4e !important;
-    color: #9c9e9e !important;
+	color: #9c9e9e !important;
 }
