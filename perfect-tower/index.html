@@ -25,7 +25,7 @@
 </head>
 <body>
 	<span id="loadingText" class="infotext">Loading...</span>
-	
+
 	<div id="loadingDiv" style="visibility: hidden;">
 		<template id="template-nav-item">
 			<li class="nav-item"><a class="nav-link" data-toggle="tab" onclick="scriptSelect(this.parentElement)">New Script</a></li>
@@ -43,7 +43,7 @@
 			<button class="basicBtn" onclick="scriptRename()">Rename</button>
 			<select id="functionList" class="functionList"></select>
 		</div>
-		
+
 		<div class="div-container">
 			<div class="div-container-item div-container-border div-container-code">
 				<ul id="scripts-tab" class="nav nav-tabs"></ul>
@@ -81,7 +81,24 @@
 		}
 
         const theme = (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) ? "darcula" : "default";
-
+		CodeMirror.defineMode("perfect_tower_syntax", function() {
+			let lastChar = " ";
+			return {
+				token: function(stream,state) {
+					console.log(stream);
+					let index = stream.pos;
+					console.log(index);
+					if ( ( index == 0 || stream.string.charAt( index - 1 ) == " " ) && stream.match( /aaa(\b)/ ) ){
+						return "pt-type";
+					} else if ( ( index == 0 || stream.string.charAt( index - 1 ) == " " ) && stream.match( /bbb(\b)/ ) ) {
+						return "pt-style2";
+					} else {
+						lastChar = stream.next();
+						return null;
+					}
+				}
+			};
+		});
 		var editor = CodeMirror.fromTextArea(document.getElementById("scripts"), {
 			autocapitalize: false,
 			autocorrect: false,
@@ -89,12 +106,13 @@
 			indentWithTabs: true,
     		lineNumbers: true,
 			lineSeparator: "\n",
+			mode: "perfect_tower_syntax",
 			spellcheck: false,
 			readOnly: "nocursor",
             theme: theme,
             styleActiveLine: true,
             matchBrackets: true,
-  		});
+		});
 
 		editor.on("change", function() {
 			if (!activeTab || noSave) return;
@@ -430,7 +448,7 @@ gotoif(99, c.i(3, var, 3))`;
 ;   &               and
 ;   |               or
 ; Have fun!
-		
+
 :local int i
 :local double test
 :local string var
