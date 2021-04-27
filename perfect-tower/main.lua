@@ -86,6 +86,65 @@ local function cache(line, variables)
 	return _cache[key];
 end
 
+
+function parse_comment(input_text, multiline_commented)
+	local commented = false;
+	local multiline_commented = multiline_commented or false;
+	local quoted = false;
+	local quote = nil;
+	local code_buffer = {""};
+	local comment_buffer = {""};
+
+	local buffer = code_buffer;
+	if multiline_commented then
+		buffer = comment_buffer;
+	end
+	local last_last_char = "";
+	local last_char = "";
+
+	for char in input_text:gmatch"." do
+		if ((not commented) and (not multiline_commented))then
+			if (not quoted) then
+				if (char:match"[\'\"]") then
+					-- if it's a quote, toggle quote mode
+					quoted = true
+					quote = char
+				elseif (char == ";") then
+					-- if it's the comment character, toggle comment mode and swap to the comment buffer,
+					commented = true;
+					buffer = comment_buffer;
+				elseif (last_last_char == "/" and last_char == "*" and char == "*") then
+					multiline_commented = true;
+					table.remove(buffer);
+					table.remove(buffer);
+					buffer = comment_buffer
+					table.insert(buffer, "/**");
+					char = "";
+
+				end
+			else
+				-- we're not in a comment and are in the middle of a string quote
+				if (char == quote) then
+					quote = nil;
+					quoted = false;
+				end
+			end
+		elseif (multiline_commented) then
+			if (last_last_char == "*" and last_char == "*" and char == "/") then
+				multiline_commented = false
+				table.insert(buffer, char);
+				buffer = code_buffer;
+				char = "";
+			end
+		end
+		table.insert(buffer, char);
+		last_last_char = last_char;
+		last_char = char;
+	end
+
+	return table.concat(code_buffer), table.concat(comment_buffer), multiline_commented;
+end
+
 function compile(name, input, testing)
 	local variables, impulses, conditions, actions = {}, {}, {}, {};
 	local ret = {};
@@ -98,26 +157,15 @@ function compile(name, input, testing)
 	for line in input:gmatch"[^\n]*" do
 		line = line:gsub("^%s+", ""):gsub("%s+$", "");
 
-		-- comments can now go  at the end of a line
-		line = string.gsub(line, TOKEN.comment.patternAnywhere, "");
+		line, comment, commentMode = parse_comment(line, commentMode);
 		line_number = line_number + 1;
 
-		-- multiline comment support
-		if string.match(line, TOKEN.multilineCommentEnd.patternAnywhere) then
-			line = string.gsub(line, TOKEN.multilineCommentEnd.patternAnywhere, "");
-			commentMode = false;
-		elseif commentMode then
-			line = "";
-		elseif  string.match(line, TOKEN.multilineCommentStart.patternAnywhere) then
-			line = string.gsub(line, TOKEN.multilineCommentStart.patternAnywhere, "");
-			commentMode = true;
-		end
 		-- for people who like putting their multiline starts/ends on lines with actual code
 		line = line:gsub("^%s+", ""):gsub("%s+$", "");
 
 
 		if line:match"^:constant" then
-			local _, type, name, value = line:sub(2):gsub(" *;.*", ""):match("^(%a+) (%a+) " .. TOKEN.identifier.patternAnywhere .. " (.+)$");
+			local _, type, name, value = line:sub(2):match("^(%a+) (%a+) " .. TOKEN.identifier.patternAnywhere .. " (.+)$");
 			assert(type == "int" or type == "double" or type == "string" or type == "bool", "constant types are 'int', 'double', 'string' and 'bool");
 			if (type == "int" or type == "double") then
 				assert((value:match"^%d+$" and type == "int") or (value:match"^%d+%.%d*$" and type == "double"), "bad argument, " .. type .. " expected, got " .. value);
@@ -131,14 +179,8 @@ function compile(name, input, testing)
 					value = false;
 				end
 			elseif (type == "string") then
-				value = value:gsub("^%s+", ""):gsub("%s+$", "");
-				if (value:match("^%\"(.*)%\"$")) then
-					parseValue = value:match("^%\"(.*)%\"$");
-				else
-					parseValue = value:match("^%\'(.*)%\'$");
-				end
-				assert(parseValue, "bad argument, string are enclosed in either single quotes or double quotes");
-				value = parseValue;
+				quote, value = value:match("^%s*([\"\'])([^%1]*)%1%s*$");
+				assert(value, "bad argument, string are enclosed in either single quotes or double quotes");
 			end
 			name = name:lower()
 			assert(not variables[name], "variable/label/constant already exists: " .. name);
