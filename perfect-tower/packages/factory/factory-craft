@@ -3,10 +3,11 @@
 :global string cfcm
 :local int i
 :local double temp
+:local int presserDone
 
 loop:
 	i = (i + 1) % len(cfcm)
-	goto(if(gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1))) == 0 | active(gsg("cfm." . gig("cf.Digit" . sub(cfcm, i, 1)))), loop, if(gig("cf.Digit" . sub(cfcm, i, 1)) > 0, produce, if(gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)) . "." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)))) == gig("cfi.machine.presser1"), presser, craft))))
+	goto(if(gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1))) == 0 | active(gsg("cfm." . gig("cf.Digit" . sub(cfcm, i, 1)))) | (gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)) . "." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)))) > gig("cfi.machine.presser1") & gdg("cfc." . gig("cfi.machine.presser1")) > 0. & presserDone == 0), loop, if(gig("cf.Digit" . sub(cfcm, i, 1)) > 0, produce, if(gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)) . "." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)))) == gig("cfi.machine.presser1"), presser, craft))))
 
 	produce:
 		temp = min(gdg("cfc." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)) . "." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1))))), count(gsg("cf." . gig("cf." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)) . "." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)))) . ".0.i") . ".n"), gig("cf." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)) . "." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)))) . ".t")))
@@ -19,6 +20,7 @@ loop:
 		gds("cfc." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)) . "." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)))), gdg("cfc." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)) . "." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1))))) + temp - count(gsg("cf." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)) . "." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)))) . ".n"), gig("cf." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)) . "." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)))) . ".t")))
 		goto(if(gdg("cfc." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)) . "." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1))))) == 0., next, loop))
 	presser:
+		presserDone = 1
 		temp = gdg("cfc." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)) . "." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1))))) + count(gsg("cf." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)) . "." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)))) . ".n"), gig("cf." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)) . "." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)))) . ".t"))
 		presserLoop:
 			craft("hammer", 1, 1. - count("hammer", 1))
