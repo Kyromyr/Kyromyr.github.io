@@ -8,22 +8,27 @@
 :local int item
 :local int i
 
+#item "cf." . item .
+#machineItems "cfcm." . gig({item} ".m")
+#ritem {item} "." . lig(i2s(item)) .
+#amount ldg("cfc." . item)
+
 index = gig("cfi." . cf.Item . cf.Tier)
 lds("cfc." . index, if(cf.Upgrade > 0, 1., i2d(cf.Amount)) + count(gsg("cf." . index . ".n"), gig("cf." . index . ".t")))
 item = index + 1
 
 prepare:
 	item -= 1
-	goto(if(item == 0, 99, if(ldg("cfc." . item) > 0., need, prepare)))
-	need: lds("cfc." . item, ceil(max(0., ldg("cfc." . item) - count(gsg("cf." . item . ".n"), gig("cf." . item . ".t")) + if(gsg("cf." . item . ".n") == "dust", 1., 0.)) / i2d(gig("cf." . item . ".r"))))
-	cf.Error = if(gig("cf." . item . ".0.i") == 0 & ldg("cfc." . item) > 0., "<color=red>Missing " . ldg("cfc." . item) . " " . gsg("cf." . item . ".n") . " [" . gig("cf." . item . ".t") . "]", "")
+	goto(if(item == 0, 99, if({amount} > 0., need, prepare)))
+	need: lds("cfc." . item, ceil(max(0., {amount} - count(gsg({item} ".n"), gig({item} ".t")) + if(gsg({item} ".n") == "dust", 1., 0.)) / i2d(gig({item} ".r"))))
+	cf.Error = if(gig({item} ".0.i") == 0 & {amount} > 0., "<color=red>Missing " . {amount} . " " . gsg({item} ".n") . " [" . gig({item} ".t") . "]", "")
 	gotoif(99, cf.Error != "")
-	cfcm .= if(gig("cfcm." . gig("cf." . item . ".m")) == 0, i2s(gig("cf." . item . ".m")), "")
-	gis("cfcm." . gig("cf." . item . ".m"), 1 + gig("cfcm." . gig("cf." . item . ".m")))
-	gis("cfcm." . gig("cf." . item . ".m") . "." . gig("cfcm." . gig("cf." . item . ".m")), item)
-	gds("cfc." . item, ldg("cfc." . item))
+	cfcm .= if(gig({machineItems}) == 0, i2s(gig({item} ".m")), "")
+	gis({machineItems}, 1 + gig({machineItems}))
+	gis({machineItems} . "." . gig({machineItems}), item)
+	gds("cfc." . item, {amount})
 	recipe:
-		gotoif(prepare, lig(i2s(item)) == 13 | gig("cf." . item . "." . lig(i2s(item)) . ".i") == 0 | (cf.Upgrade > 0 & sub(gsg("cf." . gig("cf." . item . "." . lig(i2s(item)) . ".i") . ".n"), 6, 1) == "e"))
-		lds("cfc." . gig("cf." . item . "." . lig(i2s(item)) . ".i"), ldg("cfc." . gig("cf." . item . "." . lig(i2s(item)) . ".i")) + i2d(gig("cf." . item . "." . lig(i2s(item)) . ".a")) * ldg("cfc." . item))
+		gotoif(prepare, lig(i2s(item)) == 13 | gig({ritem} ".i") == 0 | (cf.Upgrade > 0 & sub(gsg("cf." . gig({ritem} ".i") . ".n"), 6, 1) == "e"))
+		lds("cfc." . gig({ritem} ".i"), ldg("cfc." . gig({ritem} ".i")) + i2d(gig({ritem} ".a")) * {amount})
 		lis(i2s(item), lig(i2s(item)) + 1)
 		goto(recipe)

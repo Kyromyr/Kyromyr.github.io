@@ -4,28 +4,40 @@
 :local int i
 :local double temp
 
+#machineIndex gig("cf.Digit" . sub(cfcm, i, 1))
+#machineCount gig("cfcm." . {machineIndex})
+#machineName gsg("cfm." . {machineIndex})
+#machineItem gig("cfcm." . {machineIndex} . "." . {machineCount})
+#itemAmount gdg("cfc." . {machineItem})
+#itemName gsg("cf." . {machineItem} . ".n")
+#itemTier gig("cf." . {machineItem} . ".t")
+#produceName gsg("cf." . gig("cf." . {machineItem} . ".0.i") . ".n")
+#presserIndex gig("cfi.machine.presser1")
+#presserAmount gdg("cfc." . {presserIndex})
+#craftsRemain gig("cfcm.0") + gig("cfcm.1") + gig("cfcm.2") + gig("cfcm.3") + gig("cfcm.4") + gig("cfcm.5") + gig("cfcm.6") + gig("cfcm.7") + gig("cfcm.8") + gig("cfcm.9")
+
 loop:
 	i = (i + 1) % len(cfcm)
-	goto(if(gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1))) == 0 | active(gsg("cfm." . gig("cf.Digit" . sub(cfcm, i, 1)))) | (gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)) . "." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)))) > gig("cfi.machine.presser1") & gdg("cfc." . gig("cfi.machine.presser1")) > 0.), loop, if(gig("cf.Digit" . sub(cfcm, i, 1)) > 0, produce, if(gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)) . "." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)))) == gig("cfi.machine.presser1"), presser, craft))))
+	goto(if({machineCount} == 0 | active({machineName}) | ({machineItem} > {presserIndex} & {presserAmount} > 0.), loop, if({machineIndex} > 0, produce, if({machineItem} == {presserIndex}, presser, craft))))
 
 	produce:
-		temp = min(gdg("cfc." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)) . "." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1))))), count(gsg("cf." . gig("cf." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)) . "." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)))) . ".0.i") . ".n"), gig("cf." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)) . "." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)))) . ".t")))
-		produce(gsg("cf." . gig("cf." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)) . "." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)))) . ".0.i") . ".n"), gig("cf." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)) . "." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)))) . ".t"), temp, gsg("cfm." . gig("cf.Digit" . sub(cfcm, i, 1))))
-		gds("cfc." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)) . "." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)))), gdg("cfc." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)) . "." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1))))) - temp)
-		goto(if(gdg("cfc." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)) . "." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1))))) == 0., next, loop))
+		temp = min({itemAmount}, count({produceName}, {itemTier}))
+		produce({produceName}, {itemTier}, temp, {machineName})
+		gds("cfc." . {machineItem}, {itemAmount} - temp)
+		goto(if({itemAmount} == 0., next, loop))
 	craft:
-		temp = count(gsg("cf." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)) . "." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)))) . ".n"), gig("cf." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)) . "." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)))) . ".t"))
-		craft(gsg("cf." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)) . "." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)))) . ".n"), gig("cf." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)) . "." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)))) . ".t"), gdg("cfc." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)) . "." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1))))))
-		gds("cfc." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)) . "." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)))), gdg("cfc." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)) . "." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1))))) + temp - count(gsg("cf." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)) . "." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)))) . ".n"), gig("cf." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)) . "." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)))) . ".t")))
-		goto(if(gdg("cfc." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)) . "." . gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1))))) == 0., next, loop))
+		temp = count({itemName}, {itemTier})
+		craft({itemName}, {itemTier}, {itemAmount})
+		gds("cfc." . {machineItem}, {itemAmount} + temp - count({itemName}, {itemTier}))
+		goto(if({itemAmount} == 0., next, loop))
 	presser:
-		temp = gdg("cfc." . gig("cfi.machine.presser1")) + count("machine.presser", 1)
+		temp = count("machine.presser", 1)
 		presserLoop:
 			craft("hammer", 1, 2. - count("hammer", 1))
-			craft("machine.presser", 1, floor(count("hammer", 1) / 2.))
-			gds("cfc." . gig("cfi.machine.presser1"), temp - count("machine.presser", 1))
-			goto(if(gdg("cfc." . gig("cfi.machine.presser1")) == 0., next, presserLoop))
+			craft("machine.presser", 1, min({presserAmount}, floor(count("hammer", 1) / 2.)))
+			gds("cfc." . {presserIndex}, {presserAmount} + temp - count("machine.presser", 1))
+			goto(if({presserAmount} == 0., next, presserLoop))
 	next:
-		gis("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1)), gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1))) - 1)
-		cfcm = if(gig("cfcm." . gig("cf.Digit" . sub(cfcm, i, 1))) > 0, cfcm, sub(cfcm, 0, i) . sub(cfcm, i+1, 99))
-		goto(if(0 == gig("cfcm.0") + gig("cfcm.1") + gig("cfcm.2") + gig("cfcm.3") + gig("cfcm.4") + gig("cfcm.5") + gig("cfcm.6") + gig("cfcm.7") + gig("cfcm.8") + gig("cfcm.9"), 99, loop))
+		gis("cfcm." . {machineIndex}, {machineCount} - 1)
+		cfcm = if({machineCount} > 0, cfcm, sub(cfcm, 0, i) . sub(cfcm, i+1, 99))
+		goto(if({craftsRemain} == 0, 99, loop))
