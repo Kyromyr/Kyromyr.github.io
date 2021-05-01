@@ -1,0 +1,34 @@
+:global string cf.Error
+:global string cf.Item
+:global int cf.Tier
+:global int cf.Amount
+:global int cf.Upgrade
+:global string cfcm
+:local int index
+:local int item
+:local int i
+
+#item "cf." . item .
+#machineItems "cfcm." . gig({item} ".m")
+#ritem {item} "." . lig(i2s(item)) .
+#amount ldg("cfc." . item)
+
+index = gig("cfi." . cf.Item . cf.Tier)
+lds("cfc." . index, if(cf.Upgrade > 0, 1., i2d(cf.Amount)) + count(gsg("cf." . index . ".n"), gig("cf." . index . ".t")))
+item = index + 1
+
+prepare:
+	item -= 1
+	goto(if(item == 0, 99, if({amount} > 0., need, prepare)))
+	need: lds("cfc." . item, ceil(max(0., {amount} - count(gsg({item} ".n"), gig({item} ".t")) + if(gsg({item} ".n") == "dust", 1., 0.)) / i2d(gig({item} ".r"))))
+	cf.Error = if(gig({item} ".0.i") == 0 & {amount} > 0., "<color=red>Missing " . {amount} . " " . gsg({item} ".n") . " [" . gig({item} ".t") . "]", "")
+	gotoif(99, cf.Error != "")
+	cfcm .= if(gig({machineItems}) == 0, i2s(gig({item} ".m")), "")
+	gis({machineItems}, 1 + gig({machineItems}))
+	gis({machineItems} . "." . gig({machineItems}), item)
+	gds("cfc." . item, {amount})
+	recipe:
+		gotoif(prepare, lig(i2s(item)) == 13 | gig({ritem} ".i") == 0 | (cf.Upgrade > 0 & sub(gsg("cf." . gig({ritem} ".i") . ".n"), 6, 1) == "e"))
+		lds("cfc." . gig({ritem} ".i"), ldg("cfc." . gig({ritem} ".i")) + i2d(gig({ritem} ".a")) * {amount})
+		lis(i2s(item), lig(i2s(item)) + 1)
+		goto(recipe)
