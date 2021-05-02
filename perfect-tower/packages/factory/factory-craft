@@ -31,11 +31,11 @@ loop:
 		gds("cfc." . {machineItem}, {itemAmount} + temp - count({itemName}, {itemTier}))
 		goto(if({itemAmount} == 0., next, loop))
 	presser:
-		temp = count("machine.presser", 1)
+		temp = {presserAmount} + count("machine.presser", 1)
 		presserLoop:
 			craft("hammer", 1, 2. - count("hammer", 1))
 			craft("machine.presser", 1, min({presserAmount}, floor(count("hammer", 1) / 2.)))
-			gds("cfc." . {presserIndex}, {presserAmount} + temp - count("machine.presser", 1))
+			gds("cfc." . {presserIndex}, temp - count("machine.presser", 1))
 			goto(if({presserAmount} == 0., next, presserLoop))
 	next:
 		gis("cfcm." . {machineIndex}, {machineCount} - 1)
