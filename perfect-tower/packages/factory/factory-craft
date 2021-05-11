@@ -18,7 +18,7 @@
 
 loop:
 	i = (i + 1) % len(cfcm)
-	goto(if({machineCount} == 0 | active({machineName}) | ({machineItem} > {presserIndex} & {presserAmount} > 0.), loop, if({machineIndex} > 0, produce, if({machineItem} == {presserIndex}, presser, craft))))
+	goto(if({machineCount} == 0 | active({machineName}) | ({machineItem} > {presserIndex} & {presserAmount} > 0.), loop, if({machineIndex} > 0, produce, if({machineItem} == {presserIndex} & gdg("cfc." . gig("cfi.plate1")) == 0. & gdg("cfc." . gig("cfi.chip1")) == 0. & gdg("cfc." . gig("cfi.wire1")) == 0. & gdg("cfc." . gig("cfi.ingot2")) == 0. & gdg("cfc." . gig("cfi.rod2")) == 0., presser, craft))))
 
 	produce:
 		temp = min({itemAmount}, count({produceName}, {itemTier}))
