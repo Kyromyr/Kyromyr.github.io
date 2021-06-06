@@ -13,7 +13,7 @@
 #amount ldg("cfc." . item)
 
 index = gig("cfi." . cf.Item . cf.Tier)
-lds("cfc." . index, count(gsg("cf." . index . ".n"), gig("cf." . index . ".t")))
+lds("cfc." . index, i2d(cf.Amount) + count(gsg("cf." . index . ".n"), gig("cf." . index . ".t")))
 item = index + 1
 
 prepare:
