@@ -2,7 +2,6 @@
 :global string cf.Item
 :global int cf.Tier
 :global int cf.Amount
-:global int cf.Upgrade
 :global string cfcm
 :local int index
 :local int item
@@ -14,7 +13,7 @@
 #amount ldg("cfc." . item)
 
 index = gig("cfi." . cf.Item . cf.Tier)
-lds("cfc." . index, if(cf.Upgrade > 0, 1., i2d(cf.Amount)) + count(gsg("cf." . index . ".n"), gig("cf." . index . ".t")))
+lds("cfc." . index, count(gsg("cf." . index . ".n"), gig("cf." . index . ".t")))
 item = index + 1
 
 prepare:
@@ -28,7 +27,7 @@ prepare:
 	gis({machineItems} . "." . gig({machineItems}), item)
 	gds("cfc." . item, {amount})
 	recipe:
-		gotoif(prepare, lig(i2s(item)) == 13 | gig({ritem} ".i") == 0 | (cf.Upgrade > 0 & sub(gsg("cf." . gig({ritem} ".i") . ".n"), 6, 1) == "e"))
+		gotoif(prepare, lig(i2s(item)) == 13 | gig({ritem} ".i") == 0)
 		lds("cfc." . gig({ritem} ".i"), ldg("cfc." . gig({ritem} ".i")) + i2d(gig({ritem} ".a")) * {amount})
 		lis(i2s(item), lig(i2s(item)) + 1)
 		goto(recipe)

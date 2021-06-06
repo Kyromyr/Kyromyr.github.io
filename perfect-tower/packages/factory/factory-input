@@ -2,7 +2,6 @@
 :global string cf.Item
 :global int cf.Tier
 :global int cf.Amount
-:global int cf.Upgrade
 
 key.p()
 
@@ -11,7 +10,6 @@ isopen("factory") & cf.Item == "" & cf.Error == ""
 cf.Item = "producer.exoticgems"
 cf.Tier = 1
 cf.Amount = 1
-cf.Upgrade = 0
 
 gss("<color=yellow>Factory", "<color=red>-- Don't touch! --")
 gss("</color><size=0>cf.hideGlobals", "")
@@ -20,7 +18,7 @@ execute("factory-cleanup")
 gss("<color=yellow>Factory", "Preparing data")
 executesync("factory-data")
 
-cf.Error = if(gig("cfi." . cf.Item . cf.Tier) == 0, "<color=red>Item and/or tier doesn't exist", if(cf.Amount < 1, "<color=red>Can't craft " . cf.Amount . " items", if(cf.Upgrade > 0 & (cf.Tier == 1 | sub(cf.Item, 6, 1) != "e"), "<color=red>Can't upgrade item", "")))
+cf.Error = if(gig("cfi." . cf.Item . cf.Tier) == 0, "<color=red>Item and/or tier doesn't exist", if(cf.Amount < 1, "<color=red>Can't craft " . cf.Amount . " items", ""))
 gotoif(99, cf.Error != "")
 
 gss("<color=yellow>Factory", "Preparing work")

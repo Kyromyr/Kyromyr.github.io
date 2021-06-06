@@ -2,7 +2,6 @@
 :global string cf.Item
 :global int cf.Tier
 :global int cf.Amount
-:global int cf.Upgrade
 :global string cfcm
 :local int i
 
@@ -16,7 +15,6 @@ gss("<color=yellow>Factory", cf.Error)
 cf.Item = ""
 cf.Tier = 0
 cf.Amount = 0
-cf.Upgrade = 0
 cfcm = ""
 cfcmLoop:
 	gis("cfcm." . i, 0)
