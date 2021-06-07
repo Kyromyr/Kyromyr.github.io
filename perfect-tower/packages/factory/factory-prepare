@@ -5,7 +5,6 @@
 :global string cfcm
 :local int index
 :local int item
-:local int i
 
 #item "cf." . item .
 #machineItems "cfcm." . gig({item} ".m")

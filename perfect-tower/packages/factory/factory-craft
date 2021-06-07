@@ -1,5 +1,3 @@
-:global string cf.Item
-:global int cf.Tier
 :global string cfcm
 :local int i
 :local double temp
@@ -8,18 +6,16 @@
 #machineCount gig("cfcm." . {machineIndex})
 #machineName gsg("cfm." . {machineIndex})
 #machineItem gig("cfcm." . {machineIndex} . "." . {machineCount})
+#craftItem gig("cfcm.0." . gig("cfcm.0"))
 #itemAmount gdg("cfc." . {machineItem})
 #itemName gsg("cf." . {machineItem} . ".n")
 #itemTier gig("cf." . {machineItem} . ".t")
 #produceName gsg("cf." . gig("cf." . {machineItem} . ".0.i") . ".n")
-#presserIndex gig("cfi.machine.presser1")
-#presserAmount gdg("cfc." . {presserIndex})
 #craftsRemain gig("cfcm.0") + gig("cfcm.1") + gig("cfcm.2") + gig("cfcm.3") + gig("cfcm.4") + gig("cfcm.5") + gig("cfcm.6") + gig("cfcm.7") + gig("cfcm.8") + gig("cfcm.9")
 
 loop:
 	i = (i + 1) % len(cfcm)
-	goto(if({machineCount} == 0 | active({machineName}) | ({machineItem} > {presserIndex} & {presserAmount} > 0.), loop, if({machineIndex} > 0, produce, if({machineItem} == {presserIndex} & gdg("cfc." . gig("cfi.plate1")) == 0. & gdg("cfc." . gig("cfi.chip1")) == 0. & gdg("cfc." . gig("cfi.wire1")) == 0. & gdg("cfc." . gig("cfi.ingot2")) == 0. & gdg("cfc." . gig("cfi.rod2")) == 0., presser, craft))))
-
+	goto(if({machineCount} == 0 | active({machineName}) | ({machineItem} > {craftItem} + 21*3), loop, if({machineIndex} > 0, produce, craft)))
 	produce:
 		temp = min({itemAmount}, count({produceName}, {itemTier}))
 		produce({produceName}, {itemTier}, temp, {machineName})
@@ -30,13 +26,6 @@ loop:
 		craft({itemName}, {itemTier}, {itemAmount})
 		gds("cfc." . {machineItem}, {itemAmount} + temp - count({itemName}, {itemTier}))
 		goto(if({itemAmount} == 0., next, loop))
-	presser:
-		temp = {presserAmount} + count("machine.presser", 1)
-		presserLoop:
-			craft("hammer", 1, 2. - count("hammer", 1))
-			craft("machine.presser", 1, min({presserAmount}, floor(count("hammer", 1) / 2.)))
-			gds("cfc." . {presserIndex}, temp - count("machine.presser", 1))
-			goto(if({presserAmount} == 0., next, presserLoop))
 	next:
 		gis("cfcm." . {machineIndex}, {machineCount} - 1)
 		cfcm = if({machineCount} > 0, cfcm, sub(cfcm, 0, i) . sub(cfcm, i+1, 99))
