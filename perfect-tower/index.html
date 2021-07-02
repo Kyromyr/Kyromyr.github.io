@@ -289,11 +289,13 @@
 			var input = prompt("Input");
 			if (!input || input.length == 0) return;
 
-			var output = runLua("import", input);
-			if (typeof(output) == "undefined") return;
+			input.split(';').forEach((singleScript) => {
+				var output = runLua("import", singleScript);
+				if (typeof(output) == "undefined") return;
 
-			scriptNew(output.get(1));
-			scripts[scripts.length - 1][1] = output.get(2);
+				scriptNew(output.get(1));
+				scripts[scripts.length - 1][1] = output.get(2);
+			})
 		}
 
 		function scriptDelete() {
