@@ -273,15 +273,6 @@ function compile(name, input, testing)
 				assert(variables[var], "why are you calling the label function manually?")
 				encode{type = "number", value = variables[var].label};
 				return;
-			elseif node.func.name:match"^constant%." then
-				local var = node.args[1].value;
-				assert(variables[var], "why are you calling the constant function manually?")
-				local type = variables[var].type;
-				if (type == "int" or type == "double") then
-					type = "number";
-				end
-				encode{type = type, value = variables[var].value};
-				return
 			end
 
 			ins("s1", node.func.name);
