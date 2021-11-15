@@ -183,7 +183,8 @@ function compile(name, input, testing)
 			macros[name] = {text=macro:gsub("{[^{}]+}", args), arg_len=arg_len};
 		elseif line:match"^:const" then
 			local _, type, name, value = line:sub(2):match("^(%a+) (%a+) " .. TOKEN.identifier.patternAnywhere .. " (.+)$");
-			assert(type == "int" or type == "double" or type == "string" or type == "bool", "constant types are 'int', 'double', 'string' and 'bool");
+			assert(type, "constant definition: const [int/double/string/bool] name value")
+			assert(type == "int" or type == "double" or type == "string" or type == "bool", "constant types are 'int', 'double', 'string' and 'bool'");
 			if (type == "int" or type == "double") then
 				assert((value:match"^%d+$" and type == "int") or (value:match"^%d+%.%d*$" and type == "double"), "bad argument, " .. type .. " expected, got " .. value);
 				value = tonumber(value);
@@ -196,8 +197,9 @@ function compile(name, input, testing)
 					value = false;
 				end
 			elseif (type == "string") then
-				quote, value = value:match("^%s*([\"\'])([^%1]*)%1%s*$");
-				assert(value, "bad argument, string are enclosed in either single quotes or double quotes");
+				value = value:match"^%b''$" or value:match'^%b""$';
+				assert(value, "strings must be enclosed in either single quotes or double quotes");
+				value = value:sub(2,-2);
 			end
 			name = name:lower()
 			assert(not variables[name], "variable/label/constant already exists: " .. name);
