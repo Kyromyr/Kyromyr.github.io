@@ -82,7 +82,7 @@ local function cache(line, variables)
 	local key = {};
 
 	for _, v in pairs (variables) do
-		table.insert(key, string.format("%s.%s.%s", v.scope, v.type, v.name));
+		table.insert(key, string.format("%s.%s.%s.%s", v.scope, v.type, v.name, v.value));
 	end
 
 	table.sort(key);
