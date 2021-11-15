@@ -82,7 +82,7 @@ local function cache(line, variables)
 	local key = {};
 
 	for _, v in pairs (variables) do
-		table.insert(key, string.format("%s.%s.%s", v.scope, v.type, v.name));
+		table.insert(key, string.format("%s.%s.%s.%s", v.scope, v.type, v.name, v.value));
 	end
 
 	table.sort(key);
@@ -182,7 +182,7 @@ function compile(name, input, testing)
 			assert(not macros[name], "macro already exists: " .. name);
 			macros[name] = {text=macro:gsub("{[^{}]+}", args), arg_len=arg_len};
 		elseif line:match"^:const" then
-			local _, type, name, value = line:sub(2):match("^(%a+) (%a+) " .. TOKEN.identifier.patternAnywhere .. " (.+)$");
+			local _, type, name, value = line:sub(2):gsub(" *;.*", ""):match("^(%a+) (%a+) " .. TOKEN.identifier.patternAnywhere .. " (.+)$");
 			assert(type == "int" or type == "double" or type == "string" or type == "bool", "constant types are 'int', 'double', 'string' and 'bool");
 			if (type == "int" or type == "double") then
 				assert((value:match"^%d+$" and type == "int") or (value:match"^%d+%.%d*$" and type == "double"), "bad argument, " .. type .. " expected, got " .. value);
