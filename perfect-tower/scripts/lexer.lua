@@ -187,7 +187,7 @@ local function consumeTokensWorker(node)
 						
 						if status then
 							const = true;
-							left.value = resolveType(left) == "int" and math.modf(ret) or ret;
+							left.value = resolveType(left) == "int" and op.value ~= "." and math.modf(ret) or ret;
 							if isNegativeRemainder then
 								left.value = -left.value;
 							end
