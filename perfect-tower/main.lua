@@ -35,25 +35,17 @@ if not DEBUG then
 
 		if func == "compile" then
 			assert = assert_lexer;
-			local status, ret = pcall(compile, lua_arg.value, window.editor:getValue());
+			local status, ret = pcall(compile, lua_arg.name, lua_arg.script, lua_arg.isPackage);
 			assert = assert_old;
 
 			if status then
 				output.value = ret;
-				output.copy = ret:match".*\n.*()\n";
+				output.copy = lua_arg.isPackage and 0 or ret:match".*\n.*()\n";
+				output.success = true;
 			else
-				output.value = ret:gsub(".*GSUB_HERE", "");
-				output.copy = nil;
-			end
-		elseif func == "workspace" then
-			assert = assert_lexer;
-			local status, ret = pcall(compile, lua_arg.name, lua_arg.text, true);
-
-			if status then
-				output.workspace = ret;
-			else
-				output.workspace = nil;
 				output.value = ret:gsub(".*GSUB_HERE", lua_arg.name .. "\n");
+				output.copy = nil;
+				output.success = false;
 			end
 		elseif func == "import" then
 			local status, ret = pcall(import, lua_arg.value);
@@ -136,7 +128,7 @@ local function parseMacro(text, macros, depth)
 	end);
 end
 
-function compile(name, input, testing)
+function compile(name, input, isPackage)
 	local variables, impulses, conditions, actions = {}, {}, {}, {};
 	local ret = {};
 	line_number = 0;
@@ -341,7 +333,7 @@ function compile(name, input, testing)
 	end
 
 	ret = base64.encode(table.concat(ret));
-	return testing and ret or string.format("%s\n%s %s %s\n%s", name, #impulses, #conditions, #actions, ret);
+	return isPackage and ret or string.format("%s\n%s %s %s\n%s", name, #impulses, #conditions, #actions, ret);
 end
 
 function import(input)

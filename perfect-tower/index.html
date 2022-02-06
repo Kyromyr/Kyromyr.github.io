@@ -40,7 +40,7 @@
 			</div>
 
 			<div class="editor-info">
-				<span class="infotext">Editor: 1.48 ─ Game: v0.9.6 B1</span>
+				<span class="infotext">Editor: 1.49 ─ Game: v0.9.8 B1</span>
 				<span id="warning" class="infotext warning">Cannot access Local Storage. Scripts will not save!</span>
 				<select id="functionList" class="functionList"></select>
 			</div>
@@ -48,7 +48,7 @@
 			<div class="workspaces">
 				<div>
 					<p>
-						Worskpace:
+						Workspace:
 						<select id="workspaceList" class="workspaceList" oninput="workspaceChange(this.value)"></select>
 					</p>
 				</div>
@@ -99,6 +99,29 @@
 			return fengari.load("return lua_main'" + func + "';")();
 		}
 
+		function compileScript(script, isPackage) {
+			var name = script[0];
+			var workspace = "";
+			var result = name.match("^(.*?):(.+)$");
+
+			if (result) {
+				workspace = result[1];
+				name = result[2];
+			}
+			else if (script[2] != workspaces[1]) {
+				workspace = script[2];
+			}
+
+			if (workspace != "") {
+				name = workspace + ":" + name;
+			}
+
+			lua_arg.name = name;
+			lua_arg.script = script[1];
+			lua_arg.isPackage = isPackage;
+			runLua("compile");
+		}
+
         const theme = (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) ? "darcula" : "default";
 
 		var editor = CodeMirror.fromTextArea(document.getElementById("scripts"), {
@@ -118,7 +141,8 @@
 		editor.on("change", function() {
 			if (!activeTab || noSave) return;
 			updateWarn(false);
-			runLua("compile", scripts[activeTab.id][0]);
+			scripts[activeTab.id][1] = editor.getValue();
+			compileScript(scripts[activeTab.id], false);
 		});
 
 		editor.clearHistory();
@@ -167,7 +191,7 @@
 				editor.setOption("readOnly", false);
 				editor.setValue(scripts[node.id][1]);
 				editor.setHistory(histories[node.id]);
-				runLua("compile", scripts[activeTab.id][0]);
+				compileScript(scripts[node.id], false);
 			}
 			noSave = false;
 		}
@@ -322,7 +346,7 @@
 				activeTab.children[0].textContent = input;
 				updateWarn(false);
 				scriptSave();
-				runLua("compile", input);
+				compileScript(scripts[activeTab.id], false);
 			}
 		}
 

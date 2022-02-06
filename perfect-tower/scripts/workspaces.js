@@ -20,7 +20,7 @@ function workspaceLoad() {
     });
 
     // Change view
-    workspaceChange("All");
+    workspaceChange(workspaces[0]);
 }
 
 function createWorkspaceElement(workspaceName) {
@@ -57,9 +57,15 @@ function workspaceRename() {
         return;
     }
 
-    if (newWorkspaceName === workspaces[0] || newWorkspaceName === workspaces[1]) {
-        alert('These names are resevered');
-        return
+    for (let i = 0; i < workspaces.length; ++i) {
+        if (newWorkspaceName === workspaces[i]) {
+            if (i <= 1) {
+                alert(`${workspaces[i]} is a resevered name`);
+                return;
+            } else if (!confirm(`${workspaces[i]} already exists. Merge?`)) {
+                return;
+            }
+        }
     }
 
     // Switch all scripts from workspace to new name
@@ -134,40 +140,34 @@ function workspaceChange(value) {
 
 // Export all scripts in workspace
 function workspaceExport() {
+    const currentWorkspace = workspaceList.value;
     var exported = [];
-    var err = false;
-    output.copy = undefined;
 
-    scripts.forEach(script => {
-        if (!err && (script[2] == currentWorkspace || workspaceList.value == workspaces[0])) {
-            lua_arg.name = script[0];
-            lua_arg.text = script[1];
-            runLua("workspace");
-            if (typeof(output.workspace) !== "string") {
-                err = true;
+    for (const script of scripts) {
+        if (currentWorkspace === script[2] || currentWorkspace === workspaces[0]) {
+            compileScript(script, true);
+            if (!output.success) {
                 return;
             }
-            exported.push(output.workspace);
+            exported.push(output.value);
         }
-    });
-
-    if (err) {
-        return;
-    }
+    };
     var text = exported.join(";");
 
     if (text.length == 0) {
         output.value = "There are no scripts here";
         return;
     }
-
     output.value = text;
     output.copy = 0;
 }
 
 function workspaceMoveScript() {
-    if (!activeTab) return;
-
+    if (!activeTab || workspaceList.value !== workspaces[0]) {
+        alert(`To move a script first open the destination workspace, then open the ${workspaces[0]} workspace, select the script you want to move and press Move Script`);
+        return;
+    }
     scripts[activeTab.id][2] = currentWorkspace;
     scriptSave();
+    compileScript(scripts[activeTab.id]);
 }
