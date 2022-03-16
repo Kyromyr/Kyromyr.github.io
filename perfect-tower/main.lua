@@ -117,7 +117,6 @@ local function parseMacro(text, macros, depth)
 			end
 		end
 		assert(nesting == 0, "unclosed parenthesis inside macro call: " .. macro);
-		name = name:lower();
 		local macro_obj = macros[name];
 		assert(macro_obj, "macro does not exist: " .. name);
 		local unexpanded, arg_len = macro_obj.text, macro_obj.arg_len;
@@ -170,7 +169,6 @@ function compile(name, input, isPackage)
 				arg_len = arg_len + 1;
 				arg_begin = pos + 1;
 			end
-			name = name:lower();
 			assert(not macros[name], "macro already exists: " .. name);
 			macros[name] = {text=macro:gsub("{[^{}]+}", args), arg_len=arg_len};
 		elseif line:match"^:const" then
@@ -193,14 +191,12 @@ function compile(name, input, isPackage)
 				assert(value, "strings must be enclosed in either single quotes or double quotes");
 				value = value:sub(2,-2);
 			end
-			name = name:lower()
 			assert(not variables[name], "variable/label/constant already exists: " .. name);
 			variables[name] = {name = name, scope = "constant", type = type, value = value};
 		elseif line:match"^:" then
 			local scope, type, name = line:sub(2):gsub(" *;.*", ""):match("^(%a+) (%a+) " .. TOKEN.identifier.patternAnywhere .."$");
 			assert(scope, "variable definition: [global/local/const] [int/double/string] name");
 
-			name = name:lower();
 			assert(scope == "global" or scope == "local", "variable scopes are 'global' and 'local'");
 			assert(type == "int" or type == "double" or type == "string", "variable types are 'int', 'double' and 'string'");
 			assert(not variables[name], "variable/label already exists: " .. name);
@@ -209,7 +205,6 @@ function compile(name, input, isPackage)
 		else
 			line = parseMacro(line, macros, 1)
 				:gsub(TOKEN.identifier.pattern .. ":", function(name)
-					name = name:lower();
 					assert(not variables[name] or labelCache[name], "variable/label already exists: " .. name);
 					variables[name] = {name = name, scope = "local", type = "int", label = 0};
 					table.insert(labelCache, name);
@@ -400,7 +395,7 @@ function import(input)
 				
 				if arg.type:match"^op_" then
 					if args[i]:match'^".*"$' then
-						args[i] = args[i]:sub(2, -2):lower()
+						args[i] = args[i]:sub(2, -2)
 							:gsub("&&", "&")
 							:gsub("||", "|")
 							:gsub("^=$", "==")
@@ -417,7 +412,7 @@ function import(input)
 			local scope, type, func_name = func.name:match"(%a+)%.(%a+)%.(%a+)";
 
 			if (scope == "global" or scope == "local") and args[1]:match'^"' then
-				local var = args[1]:sub(2,-2):lower();
+				local var = args[1]:sub(2,-2)
 
 				if var == var:match(TOKEN.identifier.pattern) then
 					if not variables[var] then
