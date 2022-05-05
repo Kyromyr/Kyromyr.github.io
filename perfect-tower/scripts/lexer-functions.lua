@@ -11,13 +11,16 @@ local strings = {
 	machine = {"oven", "assembler", "refinery", "crusher", "cutter", "presser", "mixer", "shaper", "boiler"},
 
 	inventory = {"inventory", "equipped", "combinator", "cuboscube"},
-	element = {"fire", "water", "earth", "air", "nature", "light", "darkness", "electricity"},
+	elementMuseum = {"fire", "water", "earth", "air", "nature", "light", "darkness", "electricity"},
 	elementMarket = {"fire", "water", "earth", "air", "nature", "light", "darkness", "electricity", "universal"},
+	elementAll = {"fire", "water", "earth", "air", "nature", "light", "darkness", "electricity", "universal", "neutral"},
 
 	workerTask = {"task.towertesting.upgrade", "task.towertesting.upgradeEra", "task.arcade.playLuckyWheel", "task.arcade.playJumble", "shipyard.shipping", "task.museum.buycombine", "task.powerplant.replace", "task.powerplant.restart", "task.dyson.construct", "task.laboratory.prestige", "task.laboratory.nature.water", "task.laboratory.neutral.expand", "task.laboratory.water.freeze", "task.laboratory.darkness.search", "task.laboratory.gems.spin", "factory.oreManagement", "factory.refiningManagement", "factory.dissolveManagement", "task.mine.drill", "task.mine", "task.mine.asteroid", "task.claim.asteroid", "task.scan.asteroid", "task.construct"},
 
 	region = {"forest", "desert", "winter", "underground", "volcano", "highmountain", "jungle", "metallicruins", "beach", "ocean", "neutral", "darkrealm", "heaven", "universe", "chaos"},
 	difficulty = {"easy", "medium", "hard", "insane", "nightmare", "impossible"},
+
+	eraDivider = {"damage", "health"},
 };
 
 for _, tbl in pairs (strings) do
@@ -62,14 +65,17 @@ VALIDATOR = {
 	machine = function(value) return stringValid("machine", value, "Machines"); end,
 
 	inv = function(value) return stringValid("inventory", value, "Inventories"); end,
-	element = function(value) return stringValid("element", value, "Elements"); end,
+	elementMuseum = function(value) return stringValid("elementMuseum", value, "Elements"); end,
 	elementMarket = function(value) return stringValid("elementMarket", value, "Elements"); end,
+	elementAll = function(value) return stringValid("elementAll", value, "Elements"); end,
 
 	workerGroup = function(value) return rangeValid(value, 0, 5); end,
 	workerTask = function(value) return stringValid("workerTask", value, "Tasks"); end,
 
 	region = function(value) return stringValid("region", value, "Regions"); end,
 	difficulty = function(value) return stringValid("difficulty", value, "Difficulties"); end,
+
+	eraDivider = function(value) return stringValid("eraDivider", value, "Era dividers"); end,
 };
 
 local primitives = {void=1, impulse=1, bool=1, int=1, double=1, string=1, vector=1, op_set=2, op_comp=2, op_mod=2};
@@ -204,9 +210,13 @@ double game.wave() Game
 double game.era() Game
 double game.infinity() Game
 double game.waveAcceleration() Game
+double player.xp() Game
 double highscore.wave(string:region[region], string:difficulty[difficulty]) Game #highscore.wave#
 double highscore.era(string:region[region], string:difficulty[difficulty]) Game #highscore.era#
 double highscore.infinity(string:region[region], string:difficulty[difficulty]) Game #highscore.infinity#
+double game.disable.era.cost(string:element[elementAll]) Game #disable.cost#
+void game.disable.era(string:element[elementAll]) Game #disable.era#
+void game.upgrade.era(string:divider[eraDivider], int:numTimes) Game #upgrade.era#
 
 bool software.enabled(string:name[software]) Game #software.enabled#
 string game.softwareid.find(string:name) Game #software.find#
@@ -268,7 +278,7 @@ int museum.freeSlots(string:inventory[inv]) Museum
 int museum.stone.tier(string:inventory[inv], int:slot) Museum
 string museum.stone.element(string:inventory[inv], int:slot) Museum
 void museum.fill(bool:enable) Museum
-void museum.buy(string:element[element]) Museum
+void museum.buy(string:element[elementMuseum]) Museum
 void museum.buyMarket(string:element[elementMarket], int:tierMax) Museum
 void museum.combine(int:tierMax) Museum
 void museum.transmute() Museum
