@@ -11,7 +11,6 @@ local strings = {
 	machine = {"oven", "assembler", "refinery", "crusher", "cutter", "presser", "mixer", "shaper", "boiler"},
 
 	inventory = {"inventory", "equipped", "combinator", "cuboscube"},
-	elementMuseum = {"fire", "water", "earth", "air", "nature", "light", "darkness", "electricity"},
 	elementMarket = {"fire", "water", "earth", "air", "nature", "light", "darkness", "electricity", "universal"},
 	elementAll = {"fire", "water", "earth", "air", "nature", "light", "darkness", "electricity", "universal", "neutral"},
 
@@ -65,7 +64,6 @@ VALIDATOR = {
 	machine = function(value) return stringValid("machine", value, "Machines"); end,
 
 	inv = function(value) return stringValid("inventory", value, "Inventories"); end,
-	elementMuseum = function(value) return stringValid("elementMuseum", value, "Elements"); end,
 	elementMarket = function(value) return stringValid("elementMarket", value, "Elements"); end,
 	elementAll = function(value) return stringValid("elementAll", value, "Elements"); end,
 
@@ -273,18 +271,33 @@ void factory.craft(string:item[craft], int:tier[tier], double:amount) Factory
 void factory.produce(string:item[produce], int:tier[tier], double:amount, string:machine[machine]) Factory
 void factory.trash(string:item[item], int:tier[tier], double:amount) Factory
 
-bool museum.isfill() Museum
+bool museum.market.preference(string:element[elementMarket]) Museum #museum.preference#
+bool museum.market.slotLocked(int:offerSlot) Museum #museum.isSlotLocked#
 int museum.freeSlots(string:inventory[inv]) Museum
 int museum.stone.tier(string:inventory[inv], int:slot) Museum
+int museum.market.preferredTier() Museum #museum.preferredTier#
+int museum.market.maxTier(string:element[elementMarket]) Museum #museum.maxTier#
+int museum.market.slotTier(int:offerSlot) Museum #museum.slotTier#
+int museum.rebuy.tier(int:trashSlot) Museum #museum.trashTier#
+double museum.market.timer() Museum #museum.timer#
 string museum.stone.element(string:inventory[inv], int:slot) Museum
-void museum.fill(bool:enable) Museum
-void museum.buy(string:element[elementMuseum]) Museum
-void museum.buyMarket(string:element[elementMarket], int:tierMax) Museum
+string museum.market.slotElement(int:offerSlot) Museum #museum.slotElement#
+string museum.rebuy.element(int:trashSlot) Museum #museum.trashElement#
 void museum.combine(int:tierMax) Museum
 void museum.transmute() Museum
 void museum.move(string:from[inv], int:slot, string:to[inv]) Museum
 void museum.delete(string:inventory[inv], int:slot) Museum
 void museum.clear(string:inventory[inv]) Museum
+void museum.stone.buy(string:element[elementMarket], int:tier, int:quantity) Museum #museum.buyTier#
+void museum.stone.buyRange(string:element[elementMarket], int:tierMin, int:tierMax, int:quantity) Museum #museum.buyRange#
+void museum.moveSlot(string:from[inv], int:fromSlot, string:to[inv] int:toSlot) Museum #museum.moveTo#
+void museum.swap(string:invA[inv], int:slotA, string:invB[inv] int:slotB) Museum #museum.swap#
+void museum.market.set.preferredTier(int:tier) Museum #museum.setPreferredTier#
+void museum.market.set.preference(string:element[elementMarket], bool) Museum #museum.setPreference#
+void museum.market.refresh() Museum #museum.refresh#
+void museum.market.buy(int:offerSlot, int:quantity) Museum #museum.buyOffer#
+void museum.market.set.slotLocked(int:offerSlot, bool:locked) Museum #museum.setSlotLocked#
+void museum.rebuy.buy(int:trashSlot) Museum #museum.rebuy#
 
 int tradingpost.offerCount() Trading Post
 void tradingpost.refresh() Trading Post
